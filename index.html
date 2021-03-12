@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+    <img src="public/assets/tile-scroll.png" />
+    <canvas id="myCanvas" style="border: 1px solid #000000"> </canvas>
+
+    <!-- <script type="module">
+
+        const Player = function(x,y) {
+            this.x = x;
+            this.y = y;
+        };
+
+        const Viewport = function (x,y,width,height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        }
+
+        Viewport.prototype = {
+            scrollTo: function(x,y){
+                this.x=x - this.width*0.5;
+                this.y=y - this.height*0.5;
+
+            }
+        }
+
+        const player = new Player(64,64); 
+        const viewport = new Viewport(128,128, 128,128)
+
+        const spriteSize = 64;
+        const scaledSize = 32;
+        const rows = 10;
+        const cols = 10;
+        const map = [
+            2,2,2,2,2,2,2,2,2,2,
+            2,0,2,1,1,1,2,3,0,2,
+            2,0,0,0,1,1,2,3,0,2,
+            2,2,2,3,0,1,2,3,0,2,
+            2,2,2,3,3,2,3,0,0,2,
+            2,2,3,0,0,1,2,3,0,2,
+            2,0,2,1,1,1,2,3,0,2,
+            2,0,0,0,1,1,2,3,0,2,
+            2,2,2,3,0,1,2,3,0,2,
+            2,2,2,2,2,2,2,2,2,2
+        ]
+      const context = document.getElementById("myCanvas").getContext("2d");
+      let height = document.documentElement.clientHeight;
+      let width = document.documentElement.clientWidth;
+
+      function loop() {
+        window.requestAnimationFrame(loop);
+
+        // viewport.x++;
+
+        let height = document.documentElement.clientHeight;
+        let width = document.documentElement.clientWidth;
+        context.canvas.height = height;
+        context.canvas.width = width;
+        context.fillStyle = "green";
+        context.fillRect(0, 0, width, height);
+
+        context.imageSmoothingEnable = false;
+
+        viewport.scrollTo(player.x, player.y)
+
+        let xMin = Math.floor(viewport.x / scaledSize);
+        let yMin = Math.floor(viewport.y / scaledSize);
+        let xMax = Math.ceil((viewport.x + viewport.width) / scaledSize);
+        let yMax = Math.ceil((viewport.y + viewport.height) / scaledSize); 
+
+        if (xMin < 0) {
+            xMin = 0;
+        }
+
+        for (let x=xMin; x<xMax; x++) {
+            for (let y=yMin; y<yMax; y++) {
+
+                let value = map[y * cols + x];
+                let tileX = x*scaledSize - viewport.x;
+                let tileY = y*scaledSize - viewport.y;
+                context.drawImage(tileSheet, value*spriteSize, 0, spriteSize, spriteSize, tileX, tileY, scaledSize, scaledSize);
+
+            }
+        }
+
+        context.drawImage(tileSheet, 64, 0, spriteSize, spriteSize, Math.round(player.x - viewport.x), Math.round(player.y - viewport.y), scaledSize, scaledSize);
+      }
+
+      const tileSheet = new Image();
+      tileSheet.addEventListener("load", (event) => {
+        loop();
+      });
+      tileSheet.src = "tiles.png";
+
+
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") {
+            player.x += spriteSize/2;
+        }
+        if (event.key === "ArrowLeft") {
+            player.x -= spriteSize/2;
+        }
+        if (event.key === "ArrowUp") {
+            player.y -= spriteSize/2;
+        }
+        if (event.key === "ArrowDown") {
+            player.y += spriteSize/2;
+        }
+      });
+    </script> -->
+    <script type="module" src="./src/map.js"></script>
+    <script type="module" src="./src/player.js"></script>
+    <script type="module" src="./src/viewport.js"></script>
+    <script type="module" src="simple.js"></script>
+  </body>
+</html>
