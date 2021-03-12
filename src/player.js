@@ -17,4 +17,10 @@ Player.prototype = {
   moveLeft: function () {
     this.positionX -= 1;
   },
+  moveUp: function () {
+    this.positionY -= 1;
+  },
+  moveDown: function () {
+    this.positionY += 1;
+  },
 };

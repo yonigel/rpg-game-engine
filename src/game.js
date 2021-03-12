@@ -1,26 +1,46 @@
 export function Game(canvasId, width, height, gameMap, viewport, player) {
   this.gameMap = gameMap;
+  const { tileSize, scaleUp } = this.gameMap;
   this.viewport = viewport;
   this.player = player;
-  const { tileSize, scaleUp } = this.gameMap;
   this.canvasId = canvasId;
   this.width = width;
   this.height = height;
   this.tileSize = tileSize;
   this.scaleUp = scaleUp;
-  this.isGameReady = false;
-  this.isTilesImageReady = false;
 
   window.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp") {
-      this.viewport.y -= 1;
+      event.preventDefault();
+
+      if (this.viewport.y === 0) {
+        if (this.player.positionY === 0) {
+          return;
+        }
+        this.player.moveUp();
+      } else {
+        this.viewport.y -= 1;
+      }
     }
 
     if (event.key === "ArrowDown") {
-      this.viewport.y += 1;
+      console.log(this.player);
+      console.log(this.viewport);
+      event.preventDefault();
+      if (this.viewport.y === this.viewport.height) {
+        if (this.player.positionY + this.viewport.y === this.gameMap.rows - 1) {
+          return;
+        }
+        this.player.moveDown();
+      } else if (this.player.positionY < this.player.defaultPositionY) {
+        this.player.moveDown();
+      } else {
+        this.viewport.y += 1;
+      }
     }
 
     if (event.key === "ArrowRight") {
+      event.preventDefault();
       if (this.viewport.x + this.viewport.width > this.gameMap.cols - 1) {
         if (this.player.positionX + this.viewport.x >= this.gameMap.cols - 1) {
           return;
@@ -36,6 +56,7 @@ export function Game(canvasId, width, height, gameMap, viewport, player) {
     }
 
     if (event.key === "ArrowLeft") {
+      event.preventDefault();
       if (this.viewport.x === 0) {
         if (this.player.positionX === 0) {
           return;
