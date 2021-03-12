@@ -10,9 +10,34 @@ export function Game(canvasId, width, height, gameMap, viewport, player) {
   this.scaleUp = scaleUp;
 
   window.addEventListener("keydown", (event) => {
+    const currentPlayerPositionInMapDetails =
+      this.player.positionX +
+      this.viewport.x +
+      this.player.positionY * this.gameMap.rows;
+    const currentTileType = this.gameMap.mapDetails[
+      currentPlayerPositionInMapDetails
+    ];
+
+    const rightTileType = this.gameMap.mapDetails[
+      currentPlayerPositionInMapDetails + 1
+    ];
+
+    const leftTileType = this.gameMap.mapDetails[
+      currentPlayerPositionInMapDetails - 1
+    ];
+
+    const upperTileType = this.gameMap.mapDetails[
+      currentPlayerPositionInMapDetails - this.gameMap.cols
+    ];
+
+    const downTileType = this.gameMap.mapDetails[
+      currentPlayerPositionInMapDetails + this.gameMap.cols
+    ];
     if (event.key === "ArrowUp") {
       event.preventDefault();
-
+      if (this.gameMap.blockingTile.includes(upperTileType)) {
+        return;
+      }
       if (this.viewport.y === 0) {
         if (this.player.positionY === 0) {
           return;
@@ -24,9 +49,10 @@ export function Game(canvasId, width, height, gameMap, viewport, player) {
     }
 
     if (event.key === "ArrowDown") {
-      console.log(this.player);
-      console.log(this.viewport);
       event.preventDefault();
+      if (this.gameMap.blockingTile.includes(downTileType)) {
+        return;
+      }
       if (this.viewport.y === this.viewport.height) {
         if (this.player.positionY + this.viewport.y === this.gameMap.rows - 1) {
           return;
@@ -41,6 +67,9 @@ export function Game(canvasId, width, height, gameMap, viewport, player) {
 
     if (event.key === "ArrowRight") {
       event.preventDefault();
+      if (this.gameMap.blockingTile.includes(rightTileType)) {
+        return;
+      }
       if (this.viewport.x + this.viewport.width > this.gameMap.cols - 1) {
         if (this.player.positionX + this.viewport.x >= this.gameMap.cols - 1) {
           return;
@@ -57,6 +86,9 @@ export function Game(canvasId, width, height, gameMap, viewport, player) {
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
+      if (this.gameMap.blockingTile.includes(leftTileType)) {
+        return;
+      }
       if (this.viewport.x === 0) {
         if (this.player.positionX === 0) {
           return;
@@ -83,6 +115,7 @@ Game.prototype = {
     this.tilesImage = new Image();
     this.tilesImage.src = "../public/assets/tile-scroll.png";
     this.tilesImage.addEventListener("load", () => this.drawGame());
+    this.context.imageSmoothingEnabled = false;
   },
   drawTiles: function (x, y, viewportXOffset, viewportYOffset) {
     const { mapDetails, rows, tileSize, scaleUp } = this.gameMap;
