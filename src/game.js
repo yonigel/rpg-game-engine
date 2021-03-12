@@ -13,7 +13,8 @@ export function Game(canvasId, width, height, gameMap, viewport, player) {
     const currentPlayerPositionInMapDetails =
       this.player.positionX +
       this.viewport.x +
-      this.player.positionY * this.gameMap.rows;
+      this.player.positionY * this.gameMap.rows +
+      this.viewport.y * this.gameMap.rows;
     const currentTileType = this.gameMap.mapDetails[
       currentPlayerPositionInMapDetails
     ];
@@ -44,7 +45,11 @@ export function Game(canvasId, width, height, gameMap, viewport, player) {
         }
         this.player.moveUp();
       } else {
-        this.viewport.y -= 1;
+        if (this.player.positionY > this.player.defaultPositionY) {
+          this.player.moveUp();
+        } else {
+          this.viewport.y -= 1;
+        }
       }
     }
 
