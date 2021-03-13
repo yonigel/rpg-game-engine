@@ -1,26 +1,28 @@
-export const Player = function (
-  positionX,
-  positionY,
-  defaultPositionX,
-  defaultPositionY
-) {
-  this.positionX = positionX;
-  this.positionY = positionY;
-  this.defaultPositionX = defaultPositionX;
-  this.defaultPositionY = defaultPositionY;
+export const Player = function (x, y, defaultX, defaultY) {
+  this.x = x;
+  this.y = y;
+  this.defaultX = defaultX;
+  this.defaultY = defaultY;
+  this.walkSpeed = 0.07;
 };
 
 Player.prototype = {
   moveRight: function () {
-    this.positionX += 1;
+    console.log(`before: ${this.x}`);
+    this.x += this.walkSpeed;
+    console.log(`after: ${this.x}`);
   },
   moveLeft: function () {
-    this.positionX -= 1;
+    this.x -= this.walkSpeed;
   },
   moveUp: function () {
-    this.positionY -= 1;
+    this.y -= this.walkSpeed;
   },
   moveDown: function () {
-    this.positionY += 1;
+    this.y += this.walkSpeed;
+  },
+  jump: function () {
+    this.y -= 0.5;
+    setTimeout(() => (this.y += 0.5), 1000);
   },
 };

@@ -1,3 +1,5 @@
+import { PLAYER_DIRECTION } from "./enums/map.enums.js";
+
 export function Game(canvasId, width, height, gameMap, viewport, player) {
   this.gameMap = gameMap;
   const { tileSize, scaleUp } = this.gameMap;
@@ -10,100 +12,132 @@ export function Game(canvasId, width, height, gameMap, viewport, player) {
   this.scaleUp = scaleUp;
 
   window.addEventListener("keydown", (event) => {
+    const {
+      player,
+      viewport,
+      gameMap: { mapDetails, blockingTile },
+    } = this;
     const currentPlayerPositionInMapDetails =
-      this.player.positionX +
-      this.viewport.x +
-      this.player.positionY * this.gameMap.rows +
-      this.viewport.y * this.gameMap.rows;
-    const currentTileType = this.gameMap.mapDetails[
-      currentPlayerPositionInMapDetails
-    ];
+      player.x +
+      viewport.x +
+      player.y * gameMap.rows +
+      viewport.y * gameMap.rows;
 
-    const rightTileType = this.gameMap.mapDetails[
-      currentPlayerPositionInMapDetails + 1
-    ];
+    const leftTileType =
+      mapDetails[currentPlayerPositionInMapDetails - this.player.walkSpeed];
 
-    const leftTileType = this.gameMap.mapDetails[
-      currentPlayerPositionInMapDetails - 1
-    ];
+    const upperTileType =
+      mapDetails[currentPlayerPositionInMapDetails - gameMap.cols];
 
-    const upperTileType = this.gameMap.mapDetails[
-      currentPlayerPositionInMapDetails - this.gameMap.cols
-    ];
+    const downTileType =
+      mapDetails[currentPlayerPositionInMapDetails + gameMap.cols];
 
-    const downTileType = this.gameMap.mapDetails[
-      currentPlayerPositionInMapDetails + this.gameMap.cols
-    ];
+    if (event.key === " ") {
+      event.preventDefault();
+      player.jump();
+    }
+
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      if (this.gameMap.blockingTile.includes(upperTileType)) {
+      if (blockingTile.includes(upperTileType)) {
         return;
       }
-      if (this.viewport.y === 0) {
-        if (this.player.positionY === 0) {
+      if (viewport.y === 0) {
+        if (player.y === 0) {
           return;
         }
-        this.player.moveUp();
+        player.moveUp();
       } else {
-        if (this.player.positionY > this.player.defaultPositionY) {
-          this.player.moveUp();
+        if (player.y > player.defaultY) {
+          player.moveUp();
         } else {
-          this.viewport.y -= 1;
+          viewport.y -= 1;
         }
       }
     }
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      if (this.gameMap.blockingTile.includes(downTileType)) {
+      if (blockingTile.includes(downTileType)) {
         return;
       }
-      if (this.viewport.y === this.viewport.height) {
-        if (this.player.positionY + this.viewport.y === this.gameMap.rows - 1) {
+      if (viewport.y === viewport.height) {
+        if (player.y + viewport.y === gameMap.rows - 1) {
           return;
         }
-        this.player.moveDown();
-      } else if (this.player.positionY < this.player.defaultPositionY) {
-        this.player.moveDown();
+        player.moveDown();
+      } else if (player.y < player.defaultY) {
+        player.moveDown();
       } else {
-        this.viewport.y += 1;
+        viewport.y += 1;
       }
     }
 
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      if (this.gameMap.blockingTile.includes(rightTileType)) {
+      if (
+        gameMap.isNextTileBlocking(
+          currentPlayerPositionInMapDetails,
+          player.walkSpeed,
+          PLAYER_DIRECTION.RIGHT
+        )
+      ) {
         return;
       }
-      if (this.viewport.x + this.viewport.width > this.gameMap.cols - 1) {
-        if (this.player.positionX + this.viewport.x >= this.gameMap.cols - 1) {
+
+      //   if ((player.x + player.walkSpeed) % 1 > 0) {
+      //     player.moveRight();
+      //     return;
+      //   } else {
+      //     console.log(`player.x: ${player.x}`);
+      //     console.log(`player.walkSpeed: ${player.walkSpeed}`);
+      //     console.log(
+      //       `player.x + player.walkSpeed: ${player.x + player.walkSpeed}`
+      //     );
+      //     console.log(
+      //       `(player.x + player.walkSpeed) % 1: ${
+      //         (player.x + player.walkSpeed) % 1
+      //       }`
+      //     );
+      //   }
+
+      if (viewport.x + viewport.width > gameMap.cols - player.walkSpeed) {
+        if (player.x + viewport.x >= gameMap.cols - player.walkSpeed) {
           return;
         }
-        this.player.moveRight();
+        player.moveRight();
       } else {
-        if (this.player.positionX < this.player.defaultPositionX) {
-          this.player.moveRight();
+        if (player.x < player.defaultX) {
+          player.moveRight();
         } else {
-          this.viewport.x += 1;
+          console.log(`player.x: ${player.x}`);
+          console.log(`player.defaultX: ${player.defaultX}`);
+          if (player.x + player.walkSpeed < player.defaultX + 1) {
+            player.moveRight();
+            return;
+          } else {
+            player.x = player.defaultX + player.walkSpeed;
+            viewport.x += 1;
+          }
         }
       }
     }
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      if (this.gameMap.blockingTile.includes(leftTileType)) {
+      if (blockingTile.includes(leftTileType)) {
         return;
       }
-      if (this.viewport.x === 0) {
-        if (this.player.positionX === 0) {
+      if (viewport.x === 0) {
+        if (player.x === 0) {
           return;
         }
-        this.player.moveLeft();
+        player.moveLeft();
       } else {
-        if (this.player.positionX > this.player.defaultPositionX) {
-          this.player.moveLeft();
+        if (player.x > player.defaultX) {
+          player.moveLeft();
         } else {
-          this.viewport.x -= 1;
+          viewport.x -= 1;
         }
       }
     }
@@ -124,6 +158,7 @@ Game.prototype = {
   },
   drawTiles: function (x, y, viewportXOffset, viewportYOffset) {
     const { mapDetails, rows, tileSize, scaleUp } = this.gameMap;
+
     this.context.drawImage(
       this.tilesImage,
       mapDetails[x + rows * y] * tileSize,
@@ -137,16 +172,16 @@ Game.prototype = {
     );
   },
   drawPlayer: function () {
-    const { tileSize, scaleUp } = this.gameMap;
-    const { positionX, positionY } = this.player;
+    const { tileSize, scaleUp, playerTileNumber } = this.gameMap;
+    const { x, y } = this.player;
     this.context.drawImage(
       this.tilesImage,
-      4 * tileSize,
+      playerTileNumber * tileSize,
       0,
       tileSize,
       tileSize,
-      positionX * tileSize * scaleUp,
-      positionY * tileSize * scaleUp,
+      x * tileSize * scaleUp,
+      y * tileSize * scaleUp,
       tileSize * scaleUp,
       tileSize * scaleUp
     );
@@ -158,6 +193,7 @@ Game.prototype = {
       for (let y = viewport.y; y < viewport.height + viewport.y; y++) {
         const viewportXOffset = viewport.x * gameMap.tileSize * gameMap.scaleUp;
         const viewportYOffset = viewport.y * gameMap.tileSize * gameMap.scaleUp;
+
         this.drawTiles(x, y, viewportXOffset, viewportYOffset);
         this.drawPlayer();
       }
